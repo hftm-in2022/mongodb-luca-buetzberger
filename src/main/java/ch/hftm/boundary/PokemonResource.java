@@ -2,8 +2,8 @@ package ch.hftm.boundary;
 
 import java.util.List;
 
-import ch.hftm.control.BlogService;
-import ch.hftm.entity.Blog;
+import ch.hftm.control.PokemonService;
+import ch.hftm.entity.Pokemon;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -13,23 +13,23 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/blogs")
+@Path("/pokemon")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class blogService {
+public class PokemonResource {
 
     @Inject
-    BlogService blogService;
+    PokemonService pokemonService;
 
     @GET
     @Blocking
-    public List<Blog> getAllEntries() {
-        return blogService.listAllEntries();
+    public List<Pokemon> getAllPokemons() {
+        return pokemonService.listAllPokemon();
     }
 
     @POST
     @Blocking
-    public void createEntry(Blog entry) {
-        blogService.addEntry(entry);
+    public void createEntry(Pokemon pokemon) {
+        pokemonService.addEntry(pokemon);
     }
 }
