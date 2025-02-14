@@ -18,11 +18,6 @@ public class TaskResource {
     
     @Inject
     TaskService service;
-
-    // @POST
-    // public Response createTask(Task task) {
-    //     return Response.status(201).entity(service.createTask(task)).build();
-    // }
     
     @POST
     public Response createTask(Task task) {
