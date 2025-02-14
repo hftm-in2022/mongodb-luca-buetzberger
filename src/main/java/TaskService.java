@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class TaskService {
@@ -12,6 +13,7 @@ public class TaskService {
     @Inject
     TaskRepository repository;
 
+    @Transactional
     public Task createTask(Task task) {
         repository.persist(task);
         return task;

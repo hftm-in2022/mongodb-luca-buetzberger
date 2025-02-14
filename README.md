@@ -6,6 +6,11 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 http://localhost:8080/q/swagger-ui
 
+mongoDB-luca-buetzberger
+MongoDB Clustername: Cluster0 Username / Password: lucabuetzberger enhmdTp3xaVPTFMN
+
+Mongo DB Driver 5.1 or later installation guide for java: https://www.mongodb.com/docs/drivers/java/sync/current/quick-start/#add-mongodb-as-a-dependency
+
 
 ## Running the application in dev mode
 
