@@ -2,10 +2,20 @@ package entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+
 public class TaskDTO{
     private String id;
+    @NotNull
+    @NotBlank
+    @Size(min = 1, max= 50)
     private String title;
+    @Size(max = 500)
     private String description;
+    @NotNull
     private LocalDateTime dueDate;
     private boolean completed;
 

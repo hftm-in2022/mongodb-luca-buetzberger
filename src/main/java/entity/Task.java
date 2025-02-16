@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import jakarta.json.bind.annotation.JsonbTransient;
 
+
 public class Task extends PanacheMongoEntity{
     @JsonbTransient
     private ObjectId id;
