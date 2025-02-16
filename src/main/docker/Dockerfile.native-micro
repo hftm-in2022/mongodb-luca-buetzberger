@@ -10,11 +10,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/mongodb-app .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/mongodb-luca-buetzberger .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/mongodb-app
+# docker run -i --rm -p 8080:8080 quarkus/mongodb-luca-buetzberger
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:2.0
