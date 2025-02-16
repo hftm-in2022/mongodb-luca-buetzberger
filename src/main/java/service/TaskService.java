@@ -1,12 +1,17 @@
+package service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 
+import repository.TaskRepository;
+import entity.Task;
+import entity.TaskDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import mapper.TaskDTOConverter;
 
 @ApplicationScoped
 public class TaskService {

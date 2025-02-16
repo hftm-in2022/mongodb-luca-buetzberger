@@ -1,3 +1,6 @@
+package mapper;
+import entity.Task;
+import entity.TaskDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
