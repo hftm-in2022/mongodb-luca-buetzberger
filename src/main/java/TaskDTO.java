@@ -1,25 +1,19 @@
 
 import java.time.LocalDateTime;
 
-import org.bson.types.ObjectId;
-
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import jakarta.json.bind.annotation.JsonbTransient;
-
-public class Task extends PanacheMongoEntity{
-    @JsonbTransient
-    private ObjectId id;
+public class TaskDTO{
+    private String id;
     private String title;
     private String description;
     private LocalDateTime dueDate;
     private boolean completed;
 
     // Getters and Setters
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 

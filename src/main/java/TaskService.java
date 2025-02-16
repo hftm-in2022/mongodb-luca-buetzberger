@@ -1,5 +1,6 @@
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 
@@ -13,18 +14,24 @@ public class TaskService {
     @Inject
     TaskRepository repository;
 
+    @Inject
+    TaskDTOConverter converter;
+
     @Transactional
-    public Task createTask(Task task) {
+    public TaskDTO createTask(TaskDTO taskDTO) {
+        Task task = converter.toEntity(taskDTO);
         repository.persist(task);
-        return task;
+        return converter.toDTO(task);
     }
 
-    public List<Task> getAllTasks() {
-        return repository.listAll();
+    public List<TaskDTO> getAllTasks() {
+        return repository.listAll().stream()
+                .map(converter::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Task getTask(String id) {
-        if (!ObjectId.isValid(id)) return null;
-        return repository.findById(new ObjectId(id));
+    public TaskDTO getTask(String id) {
+        Task task = repository.findByIdOptional(new ObjectId(id)).orElse(null);
+        return task != null ? converter.toDTO(task) : null;
     }
 }

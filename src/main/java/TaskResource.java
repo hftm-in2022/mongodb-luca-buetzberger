@@ -20,22 +20,22 @@ public class TaskResource {
     TaskService service;
     
     @POST
-    public Response createTask(Task task) {
-        Task createdTask = service.createTask(task);
+    public Response createTask(TaskDTO taskDTO) {
+        TaskDTO createdTask = service.createTask(taskDTO);
         return Response.status(201).entity(createdTask).build();
     }
 
     @GET
-    public List<Task> getAllTasks() {
+    public List<TaskDTO> getAllTasks() {
         return service.getAllTasks();
     }
 
     @GET
     @Path("/{id}")
     public Response getTask(@PathParam("id") String id) {
-        Task task = service.getTask(id);
-        return task != null ? 
-            Response.ok(task).build() : 
-            Response.status(404).build();
+        TaskDTO task = service.getTask(id);
+        return task != null ?
+                Response.ok(task).build() :
+                Response.status(404).build();
     }
 }
