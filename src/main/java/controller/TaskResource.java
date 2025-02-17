@@ -1,6 +1,9 @@
 package controller;
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import entity.TaskDTO;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -17,6 +20,7 @@ import service.TaskService;
 
 
 @Path("/tasks")
+@Tag(name = "Task Resource", description = "Task Management API")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TaskResource {
@@ -25,6 +29,7 @@ public class TaskResource {
     TaskService service;
     
     @POST
+    @Operation(summary = "Get all tasks.", description = "Returns a list of all tasks")
     public Response createTask(@jakarta.validation.Valid TaskDTO taskDTO) {
         TaskDTO createdTask = service.createTask(taskDTO);
         return Response.status(201).entity(createdTask).build();
@@ -37,6 +42,7 @@ public class TaskResource {
 
     @GET
     @Path("/{id}")
+    @Operation(summary = "Get a task by id", description = "Returns a task by its ID.")
     public Response getTask(@PathParam("id") String id) {
         TaskDTO task = service.getTask(id);
         return task != null ?
@@ -46,6 +52,7 @@ public class TaskResource {
 
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Delete a task by id", description = "Deletes an existing task")
     public Response deleteTask(@PathParam("id") String id) {
         service.deleteTask(id);
         return Response.noContent().build(); // HTTP 204: No Content
