@@ -1,6 +1,7 @@
 package service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -12,7 +13,7 @@ import exception.NotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import mapper.TaskDTOConverter;
+import mapper.TaskMapper;
 import repository.TaskRepository;
 
 @ApplicationScoped
@@ -22,54 +23,98 @@ public class TaskService {
     TaskRepository repository;
 
     @Inject
-    TaskDTOConverter converter;
+    TaskMapper mapper;
 
+    public List<TaskDTO> getAllTasks() {
+        try {
+            List<Task> tasks = repository.listAll();
+            List<TaskDTO> taskDTOs = tasks.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return taskDTOs;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to get all tasks");
+        }
+    }
+
+    public Optional<TaskDTO> getTaskById(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new NotFoundException("Invalid Task ID format: " + id);
+        }
+        try {
+            ObjectId objectId = new ObjectId(id);
+            Optional<Task> task = repository.findByIdOptional(objectId);
+            Optional<TaskDTO> taskDTO = task.map(mapper::toDTO);
+            return taskDTO;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to search tasks by id");
+        }
+    }
+
+    public List<TaskDTO> searchTasksByTitle(String title) {
+        try {
+            List<Task> tasks = repository.list("{ 'title': { $regex: ?1, $options: 'i' } }", ".*" + title + ".*");
+            List<TaskDTO> taskDTOs = tasks.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return taskDTOs;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to search tasks by title");
+        }
+    }
+
+    public List<TaskDTO> searchTasksByDescription(String description) {
+        try {
+            List<Task> tasks = repository.list("{ 'description': { $regex: ?1, $options: 'i' } }", ".*" + description + ".*");
+            List<TaskDTO> taskDTOs = tasks.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return taskDTOs;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to search tasks by description");
+        }
+    }
+
+    public List<TaskDTO> getTasksByCompletionStatus(boolean status) {
+        try {
+            List<Task> tasks = repository.find("completed", status).list();
+            List<TaskDTO> taskDTOs = tasks.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return taskDTOs;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to get tasks by completion status");
+        }
+    }
+
+    public List<TaskDTO> searchTasksByUsername(String username) {
+        try {
+            List<Task> tasks = repository.find("user.username", username).list();
+            List<TaskDTO> taskDTOs = tasks.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return taskDTOs;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to search tasks by username");
+        }
+    }
+    
     @Transactional
     public TaskDTO createTask(TaskDTO taskDTO) {
         try {
-            Task task = converter.toEntity(taskDTO);
+            Task task = mapper.toEntity(taskDTO);
             repository.persist(task);
-            return converter.toDTO(task);
+            Task createdTask = repository.findById(task.getId());
+            TaskDTO createdTaskDTO = mapper.toDTO(createdTask);
+            return createdTaskDTO;
         } catch (Exception e) {
             throw new DatabaseException("Failed to persist Task to the database");
         }
     }
-
-    public List<TaskDTO> getAllTasks() {
-        return repository.listAll().stream()
-                .map(converter::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public TaskDTO getTask(String id) {
-        return repository.findByIdOptional(new ObjectId(id))
-                .map(converter::toDTO)
-                .orElseThrow(() -> new NotFoundException("Task with ID " + id + " not found in the database"));
-    }
-
+    
     @Transactional
-    public void deleteTask(String id) {
-        Task task = repository.findByIdOptional(new ObjectId(id))
-                .orElseThrow(() -> new NotFoundException("Task with ID " + id + " not found in the database"));
-        repository.delete(task);
-    }
-
-    @Transactional
-    public TaskDTO updateTask(String id, TaskDTO taskDTO) {
-        Task task = repository.findByIdOptional(new ObjectId(id))
-                .orElseThrow(() -> new NotFoundException("Task with ID " + id + " not found in the database"));
-
-        task.setTitle(taskDTO.getTitle());
-        task.setDescription(taskDTO.getDescription());
-        task.setDueDate(taskDTO.getDueDate());
-        task.setCompleted(taskDTO.isCompleted());
-
-        try {
-            repository.persist(task);
-        } catch (Exception e) {
-            throw new DatabaseException("Failed to update Task in the database");
+    public void deleteTaskById(String id) {
+        if (!ObjectId.isValid(id)) {
+            throw new NotFoundException("Invalid Task ID format: " + id);
         }
-
-        return converter.toDTO(task);
+        try {
+            ObjectId objectId = new ObjectId(id);
+            boolean deleted = repository.deleteById(objectId);
+            if (deleted == false) {
+                throw new NotFoundException("Task with ID " + id + " not found in the database");
+            }
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to delete task by id");
+        }
     }
 }

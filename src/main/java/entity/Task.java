@@ -5,28 +5,26 @@ import java.time.LocalDateTime;
 import org.bson.types.ObjectId;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import jakarta.json.bind.annotation.JsonbTransient;
 
 
 public class Task extends PanacheMongoEntity{
-    @JsonbTransient
     private ObjectId id;
     private String title;
     private String description;
     private LocalDateTime dueDate;
     private boolean completed;
+    // private User user;
 
     // Getters and Setters
     public ObjectId getId() {
-        return id;
+        return this.id;
     }
-
     public void setId(ObjectId id) {
         this.id = id;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public void setTitle(String title) {
@@ -34,7 +32,7 @@ public class Task extends PanacheMongoEntity{
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -42,18 +40,26 @@ public class Task extends PanacheMongoEntity{
     }
 
     public LocalDateTime getDueDate() {
-        return dueDate;
+        return this.dueDate;
     }
 
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public boolean getCompleted() {
+        return this.completed;
     }
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+
+    // public User getUser() {
+    //     return this.user;
+    // }
+    
+    // public void setUser (User user) {
+    //     this.user = user;
+    // }
 }
