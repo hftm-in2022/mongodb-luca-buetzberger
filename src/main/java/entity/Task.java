@@ -1,6 +1,7 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 
@@ -13,7 +14,7 @@ public class Task extends PanacheMongoEntity{
     private String description;
     private LocalDateTime dueDate;
     private boolean completed;
-    // private User user;
+    private List<ObjectId> assignedUsers;
 
     // Getters and Setters
     public ObjectId getId() {
@@ -55,11 +56,11 @@ public class Task extends PanacheMongoEntity{
         this.completed = completed;
     }
 
-    // public User getUser() {
-    //     return this.user;
-    // }
-    
-    // public void setUser (User user) {
-    //     this.user = user;
-    // }
+    public List<ObjectId> getAssignedUsers() {
+        return assignedUsers;
+    }
+
+    public void setAssignedUsers(List<ObjectId> assignedUsers) {
+        this.assignedUsers = assignedUsers;
+    }
 }
