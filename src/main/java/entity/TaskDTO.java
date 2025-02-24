@@ -1,12 +1,20 @@
+package entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+
 public class TaskDTO{
-    private String id;
+    String id;
+    @NotBlank @Size(max= 50)
     private String title;
+    @Size(max = 500)
     private String description;
     private LocalDateTime dueDate;
     private boolean completed;
+    // private UserDTO user;
 
     // Getters and Setters
     public String getId() {
@@ -48,4 +56,12 @@ public class TaskDTO{
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+
+    // public UserDTO getUser() {
+    //     return user;
+    // }
+
+    // public void setUser (UserDTO user) {
+    //     this.user = user;
+    // }
 }
