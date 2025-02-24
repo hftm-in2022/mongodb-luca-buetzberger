@@ -20,15 +20,18 @@ import repository.UserRepository;
 public class UserService {
 
     @Inject
-    UserRepository repository;
+    UserRepository userRepository;
 
     @Inject
-    UserMapper mapper;
+    UserMapper userMapper;
+
+    @Inject
+    TaskService taskService;
 
     public List<UserDTO> getAllUsers() {
         try {
-            List<User> users = repository.listAll();
-            List<UserDTO> userDTOs = users.stream().map(mapper::toDTO).collect(Collectors.toList());
+            List<User> users = userRepository.listAll();
+            List<UserDTO> userDTOs = users.stream().map(userMapper::toDTO).collect(Collectors.toList());
             return userDTOs;
         } catch (Exception e) {
             throw new DatabaseException("Failed to get all users");
@@ -41,8 +44,8 @@ public class UserService {
         }
         try {
             ObjectId objectId = new ObjectId(id);
-            Optional<User> user = repository.findByIdOptional(objectId);
-            Optional<UserDTO> userDTO = user.map(mapper::toDTO);
+            Optional<User> user = userRepository.findByIdOptional(objectId);
+            Optional<UserDTO> userDTO = user.map(userMapper::toDTO);
             return userDTO;
         } catch (Exception e) {
             throw new DatabaseException("Failed to search user by id");
@@ -51,8 +54,8 @@ public class UserService {
 
     public List<UserDTO> searchUserByUsername(String username) {
         try {
-            List<User> users = repository.list("{ 'username': { $regex: ?1, $options: 'i' } }", ".*" + username + ".*");
-            List<UserDTO> userDTOs = users.stream().map(mapper::toDTO).collect(Collectors.toList());
+            List<User> users = userRepository.list("{ 'username': { $regex: ?1, $options: 'i' } }", ".*" + username + ".*");
+            List<UserDTO> userDTOs = users.stream().map(userMapper::toDTO).collect(Collectors.toList());
             return userDTOs;
         } catch (Exception e) {
             throw new DatabaseException("Failed to search users by username");
@@ -62,10 +65,10 @@ public class UserService {
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         try {
-            User user = mapper.toEntity(userDTO);
-            repository.persist(user);
-            User createdUser = repository.findById(user.getId());
-            UserDTO createdUserDTO = mapper.toDTO(createdUser);
+            User user = userMapper.toEntity(userDTO);
+            userRepository.persist(user);
+            User createdUser = userRepository.findById(user.getId());
+            UserDTO createdUserDTO = userMapper.toDTO(createdUser);
             return createdUserDTO;
         } catch (Exception e) {
             throw new DatabaseException("Failed to persist user to the database");
@@ -79,9 +82,42 @@ public class UserService {
         }
         try {
             ObjectId objectId = new ObjectId(id);
-            repository.deleteById(objectId);
+            taskService.removeUserFromTasks(id);
+            userRepository.deleteById(objectId);
         } catch (Exception e) {
             throw new DatabaseException("Failed to delete task by id");
+        }
+    }
+
+    
+    @Transactional
+    public UserDTO updateUser(String id, UserDTO userDTO) {
+        if (!ObjectId.isValid(id)) {
+            throw new NotFoundException("Invalid User ID format: " + id);
+        }
+        try {
+            ObjectId objectId = new ObjectId(id);
+            Optional<User> existingUserOptional = userRepository.findByIdOptional(objectId);
+            if (existingUserOptional.isEmpty()) {
+                throw new NotFoundException("User not found with ID: " + id);
+            }
+            User existingUser = existingUserOptional.get();
+            existingUser.setUsername(userDTO.getUsername());
+            userRepository.update(existingUser);
+            UserDTO updatedUser = userMapper.toDTO(existingUser);
+            return updatedUser;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to update user with ID: " + id);
+        }
+    }
+
+    public boolean userExists(String id) {
+        try {
+            return getUserById(id).isPresent();
+        } catch (NotFoundException e) {
+            return false;
+        } catch (DatabaseException e) {
+            throw new DatabaseException("Error checking user existence: " + e.getMessage());
         }
     }
 }

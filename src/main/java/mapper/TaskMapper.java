@@ -1,4 +1,8 @@
 package mapper;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+
 import entity.Task;
 import entity.TaskDTO;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,12 +16,11 @@ public class TaskMapper {
         taskDTO.setDescription(task.getDescription());
         taskDTO.setDueDate(task.getDueDate());
         taskDTO.setCompleted(task.getCompleted());
-        // if (task.getUser() != null) {
-        //     UserDTO userDTO = new UserDTO();
-        //     userDTO.setUsername(task.getUser().getUsername());
-        //     userDTO.setEmail(task.getUser().getEmail());
-        //     taskDTO.setUser(userDTO);
-        // }
+        taskDTO.setAssignedUsers(
+            task.getAssignedUsers() != null
+                ? task.getAssignedUsers().stream().map(ObjectId::toString).collect(Collectors.toList())
+                : null
+        );
         return taskDTO;
     }
 
@@ -26,13 +29,12 @@ public class TaskMapper {
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setDueDate(taskDTO.getDueDate());
-        task.setCompleted(taskDTO.isCompleted());
-        // if (taskDTO.getUser() != null) {
-        //     User user = new User();
-        //     user.setUsername(taskDTO.getUser().getUsername());
-        //     user.setEmail(taskDTO.getUser().getEmail());
-        //     task.setUser(user);
-        // }
+        task.setCompleted(taskDTO.getCompleted());
+        task.setAssignedUsers(
+            taskDTO.getAssignedUsers() != null
+                ? taskDTO.getAssignedUsers().stream().map(ObjectId::new).collect(Collectors.toList())
+                : null
+        );
         return task;
     }
 }

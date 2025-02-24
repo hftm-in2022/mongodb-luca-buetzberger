@@ -1,6 +1,7 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,7 +15,7 @@ public class TaskDTO{
     private String description;
     private LocalDateTime dueDate;
     private boolean completed;
-    // private UserDTO user;
+    private List<String> assignedUsers;
 
     // Getters and Setters
     public String getId() {
@@ -49,7 +50,7 @@ public class TaskDTO{
         this.dueDate = dueDate;
     }
 
-    public boolean isCompleted() {
+    public boolean getCompleted() {
         return completed;
     }
 
@@ -57,11 +58,11 @@ public class TaskDTO{
         this.completed = completed;
     }
 
-    // public UserDTO getUser() {
-    //     return user;
-    // }
+    public List<String> getAssignedUsers() {
+        return assignedUsers;
+    }
 
-    // public void setUser (UserDTO user) {
-    //     this.user = user;
-    // }
+    public void setAssignedUsers(List<String> assignedUsers) {
+        this.assignedUsers = assignedUsers;
+    }
 }
